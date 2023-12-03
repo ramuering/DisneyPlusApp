@@ -34,9 +34,20 @@ const Banner = () => {
 
   if (isClicked) {
     return (
-      <Container>
-        <HomeContainer></HomeContainer>
-      </Container>
+      <>
+        <Container>
+          <HomeContainer>
+            <Iframe
+              src={`https://www.youtube.com/embed/${movie.videos.results[0].key}?controls=0&autoplay=1&loop=1&mute=1&playlist=${movie.videos.results[0].key}`}
+              width="640"
+              height="360"
+              frameborder="0"
+              allow="autoplay: fullscreen"
+            ></Iframe>
+          </HomeContainer>
+        </Container>
+        <button onClick={() => setIsClicked(false)}>X</button>
+      </>
     );
   } else {
     return (
@@ -90,4 +101,16 @@ const HomeContainer = styled.div`
 const Iframe = styled.iframe`
   width: 100%;
   height: 100%;
+  z-index: -1;
+  opacity: 0.65;
+  border: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 `;
