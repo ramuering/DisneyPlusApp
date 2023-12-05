@@ -46,7 +46,7 @@ const Container = styled.div`
   display: grid;
   gap: 25px;
   // 레이아웃을 설정하기 위한 그리드 속성
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 1fr); //1fr-> 사용 가능한 공간의 1 부분
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(1, 1fr);
