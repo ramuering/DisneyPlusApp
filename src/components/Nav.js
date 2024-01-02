@@ -6,6 +6,7 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithPopup,
+  signOut,
 } from "firebase/auth";
 
 const Nav = () => {
@@ -15,7 +16,7 @@ const Nav = () => {
   const navigate = useNavigate();
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
-
+  const [userData, setUserData] = useState({});
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -47,15 +48,29 @@ const Nav = () => {
     setSearchValue(e.target.value); //입력된 값(input)
     navigate(`/search?q=${e.target.value}`);
   };
+
   //firebase 구글 로그인 처리 함수
   const handleAuth = () => {
     signInWithPopup(auth, provider)
-      .then((result) => {})
+      .then((result) => {
+        //state의 result.user 데이터 넣기
+        setUserData(result.user);
+      })
       .catch((error) => {
         console.log(error);
       });
   };
-
+  //로그아웃 (로그인 페이지로 이동)
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        setUserData({}); //로그인 시 생성된 유저정보 삭제
+        navigate(`/`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <NavWrapper show={show}>
       <Logo>
@@ -65,22 +80,68 @@ const Nav = () => {
           onClick={() => (window.location.href = "/")}
         />
       </Logo>
+
       {pathname === "/" ? (
         <Login onClick={handleAuth}>Login</Login>
       ) : (
-        <Input
-          value={searchValue}
-          onChange={handleChange}
-          className="nav__input"
-          type="text"
-          placeholder="영화를 검색해주세요."
-        />
+        <>
+          <Input
+            value={searchValue}
+            onChange={handleChange}
+            className="nav__input"
+            type="text"
+            placeholder="영화를 검색해주세요."
+          />
+          <SignOut>
+            <UserImg src={userData.photoURL} alt={userData.displayName} />
+            <DropDown>
+              <span onClick={handleSignOut}>Sign Out</span>
+            </DropDown>
+          </SignOut>
+        </>
       )}
     </NavWrapper>
   );
 };
 
 export default Nav;
+
+const UserImg = styled.div`
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+`;
+
+const DropDown = styled.div`
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: rgb(19, 19, 19);
+  border: 1px solid rgba(151, 151, 151, 0.34);
+  border-radius: 4px;
+  box-shadow: rgba(0 0 0 / 50%) 0px 0px 18px 0px;
+  padding: 10px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  width: 100px;
+  opacity: 0;
+`;
+const SignOut = styled.div`
+  position: relative;
+  height: 48px;
+  width: 48px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    ${DropDown} {
+      opacity: 1;
+      transition-duration: 1s;
+    }
+  }
+`;
 
 const Login = styled.a`
   background-color: rgba(0, 0, 0, 0.6);
