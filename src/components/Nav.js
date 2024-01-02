@@ -10,6 +10,9 @@ import {
 } from "firebase/auth";
 
 const Nav = () => {
+  const initialUserData = localStorage.getItem("userData")
+    ? JSON.parse(localStorage.getItem("userData"))
+    : {}; //String->Object 타입 변환
   const [show, setShow] = useState(false);
   const { pathname } = useLocation();
   const [searchValue, setSearchValue] = useState("");
@@ -55,11 +58,13 @@ const Nav = () => {
       .then((result) => {
         //state의 result.user 데이터 넣기
         setUserData(result.user);
+        localStorage.setItem("userData", JSON.stringify(result)); //값이 아닌 객체 저장
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
   //로그아웃 (로그인 페이지로 이동)
   const handleSignOut = () => {
     signOut(auth)
